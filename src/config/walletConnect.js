@@ -2,7 +2,7 @@ import { createWeb3Modal, defaultWagmiConfig } from '@web3modal/wagmi/react'
 import { mainnet, sepolia } from 'wagmi/chains'
 
 // Get projectId from https://cloud.reown.com
-export const projectId = 'YOUR_PROJECT_ID' // Replace with your WalletConnect Project ID
+export const projectId = '9aced30cb7c70da7e0a7b4129fbd0a8f'
 
 // Create a metadata object - this is used for WalletConnect
 const metadata = {
