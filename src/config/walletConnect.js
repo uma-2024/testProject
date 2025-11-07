@@ -1,5 +1,5 @@
 import { createWeb3Modal, defaultWagmiConfig } from '@web3modal/wagmi/react'
-import { mainnet, sepolia } from 'wagmi/chains'
+import { mainnet, base } from 'wagmi/chains'
 
 // Get projectId from https://cloud.reown.com
 export const projectId = '9aced30cb7c70da7e0a7b4129fbd0a8f'
@@ -14,7 +14,7 @@ const metadata = {
 
 // Create wagmiConfig
 export const config = defaultWagmiConfig({
-  chains: [mainnet, sepolia], // you can add more chains here
+  chains: [mainnet, base], // Mainnet and Base chains
   projectId,
   metadata,
   enableWalletConnect: true, // Enable WalletConnect for mobile wallets
