@@ -15,6 +15,35 @@ function App() {
   const publicClient = usePublicClient()
   const chainId = useChainId()
   const wasConnectedRef = useRef(false)
+  
+  // Listen to Web3Modal events for connection
+  useWeb3ModalEvents({
+    events: {
+      CONNECT: () => {
+        // Handle mobile redirect after successful connection
+        const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
+        
+        if (isMobile) {
+          // Delay to ensure connection is fully established
+          setTimeout(() => {
+            // Try to bring the app back to foreground
+            window.focus()
+            
+            // For iOS, try to redirect back to the app
+            if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+              // Use a small delay and then try to redirect
+              setTimeout(() => {
+                // This helps bring the browser back to foreground
+                if (document.hidden) {
+                  window.location.reload()
+                }
+              }, 500)
+            }
+          }, 1500)
+        }
+      },
+    },
+  })
 
   // Handle mobile redirect after successful connection
   useEffect(() => {
@@ -22,24 +51,26 @@ function App() {
     if (isConnected && !wasConnectedRef.current && address) {
       wasConnectedRef.current = true
       
-      // Check if we're on mobile and came from a wallet app
+      // Check if we're on mobile
       const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
-      const isFromWallet = document.referrer === '' || window.history.length <= 1
       
-      if (isMobile && isFromWallet) {
+      if (isMobile) {
         // Small delay to ensure connection is fully established
         setTimeout(() => {
           // Try to bring the app back to foreground
-          // This works for most mobile browsers
           window.focus()
           
-          // For iOS Safari, we can try to open the app URL
+          // For iOS Safari, try to redirect back to the app
           if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
-            // Try to redirect back to the app
-            const currentUrl = window.location.href
-            window.location.href = currentUrl
+            // Check if page is hidden (user is in wallet app)
+            if (document.hidden) {
+              // Try to redirect back
+              setTimeout(() => {
+                window.location.reload()
+              }, 1000)
+            }
           }
-        }, 1000)
+        }, 2000)
       }
     }
     
