@@ -26,7 +26,8 @@ export const config = defaultWagmiConfig({
 // Wallet IDs for MetaMask and Trust Wallet (featured wallets)
 // Note: MetaMask will automatically show via injected providers (EIP6963)
 // Trust Wallet will show via WalletConnect
-// Using featuredWalletIds to prioritize these wallets while still allowing access to other wallets on mobile
+// featuredWalletIds only prioritizes these wallets, it doesn't restrict the list
+// All wallets will be available on mobile through "All Wallets" button
 // You can find wallet IDs at: https://explorer.walletconnect.com/
 const featuredWalletIds = [
   'c57ca95b47569778a828d19178114f4db188b89b763c899ba0be274e97267d96', // MetaMask (for WalletConnect)
@@ -39,8 +40,8 @@ createWeb3Modal({
   projectId,
   enableAnalytics: true, // Optional - defaults to your Cloud configuration
   enableOnramp: false, // Optional - defaults to false
-  featuredWalletIds, // Feature MetaMask and Trust Wallet prominently
-  allWallets: 'ONLY_MOBILE', // Show "All Wallets" button on mobile devices only
+  featuredWalletIds, // Feature MetaMask and Trust Wallet prominently (doesn't restrict other wallets)
+  allWallets: 'SHOW', // Show "All Wallets" button everywhere to ensure all wallets are accessible on mobile
   enableAccountView: true,
   enableNetworkView: true,
 })
