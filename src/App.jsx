@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useAccount, useDisconnect, useBalance, useWalletClient, usePublicClient, useChainId } from 'wagmi'
 import { useWeb3Modal, useWeb3ModalEvents } from '@web3modal/wagmi/react'
 import BuyTokens from './components/BuyTokens.jsx'
@@ -15,31 +15,67 @@ function App() {
   const publicClient = usePublicClient()
   const chainId = useChainId()
   const wasConnectedRef = useRef(false)
-  
+  const connectionAttemptRef = useRef(false)
+  const [isMobile, setIsMobile] = useState(false)
+
+  // Detect mobile device
+  useEffect(() => {
+    const mobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
+    setIsMobile(mobile)
+    
+    // Check if we're returning from a wallet connection attempt
+    const wasConnecting = sessionStorage.getItem('walletConnecting') === 'true'
+    if (wasConnecting && mobile) {
+      // Clear the flag
+      sessionStorage.removeItem('walletConnecting')
+      
+      // Poll for connection status when page becomes visible
+      const checkConnection = () => {
+        if (!document.hidden && isConnected) {
+          // Connection successful, user is back
+          window.focus()
+        }
+      }
+      
+      // Check immediately
+      checkConnection()
+      
+      // Also check when page becomes visible
+      document.addEventListener('visibilitychange', checkConnection)
+      
+      return () => {
+        document.removeEventListener('visibilitychange', checkConnection)
+      }
+    }
+  }, [isConnected])
+
   // Listen to Web3Modal events for connection
   useWeb3ModalEvents({
     events: {
       CONNECT: () => {
-        // Handle mobile redirect after successful connection
-        const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
-        
         if (isMobile) {
-          // Delay to ensure connection is fully established
+          // Store that we're attempting connection
+          sessionStorage.setItem('walletConnecting', 'true')
+          
+          // Try to redirect back after a delay
           setTimeout(() => {
-            // Try to bring the app back to foreground
+            // Try multiple methods to bring app back to foreground
             window.focus()
             
-            // For iOS, try to redirect back to the app
+            // For iOS, try to open the app URL
             if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
-              // Use a small delay and then try to redirect
+              // Create a hidden link and click it to try to bring browser back
+              const link = document.createElement('a')
+              link.href = window.location.href
+              link.style.display = 'none'
+              document.body.appendChild(link)
+              
               setTimeout(() => {
-                // This helps bring the browser back to foreground
-                if (document.hidden) {
-                  window.location.reload()
-                }
-              }, 500)
+                link.click()
+                document.body.removeChild(link)
+              }, 1000)
             }
-          }, 1500)
+          }, 2000)
         }
       },
     },
@@ -50,27 +86,36 @@ function App() {
     // Check if we just connected (wasn't connected before, but now is)
     if (isConnected && !wasConnectedRef.current && address) {
       wasConnectedRef.current = true
+      connectionAttemptRef.current = false
       
-      // Check if we're on mobile
-      const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
+      // Clear connection attempt flag
+      sessionStorage.removeItem('walletConnecting')
       
       if (isMobile) {
-        // Small delay to ensure connection is fully established
-        setTimeout(() => {
-          // Try to bring the app back to foreground
-          window.focus()
-          
-          // For iOS Safari, try to redirect back to the app
-          if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
-            // Check if page is hidden (user is in wallet app)
+        // Multiple attempts to bring app back to foreground
+        const redirectAttempts = [
+          () => window.focus(),
+          () => {
+            // Try to reload if still hidden
             if (document.hidden) {
-              // Try to redirect back
               setTimeout(() => {
                 window.location.reload()
-              }, 1000)
+              }, 500)
+            }
+          },
+          () => {
+            // For iOS, try to open the app URL again
+            if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+              const currentUrl = window.location.href
+              window.location.href = currentUrl
             }
           }
-        }, 2000)
+        ]
+        
+        // Execute redirect attempts with delays
+        redirectAttempts.forEach((attempt, index) => {
+          setTimeout(attempt, 1000 * (index + 1))
+        })
       }
     }
     
@@ -78,7 +123,40 @@ function App() {
     if (!isConnected) {
       wasConnectedRef.current = false
     }
-  }, [isConnected, address])
+  }, [isConnected, address, isMobile])
+
+  // Listen for page visibility changes (when user returns from wallet app)
+  useEffect(() => {
+    if (!isMobile) return
+
+    const handleVisibilityChange = () => {
+      // When page becomes visible and we're connected, ensure we're focused
+      if (!document.hidden && isConnected && address) {
+        window.focus()
+        
+        // Scroll to top to ensure user sees the connected state
+        window.scrollTo(0, 0)
+      }
+    }
+
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+    
+    // Also listen for focus events
+    window.addEventListener('focus', handleVisibilityChange)
+    
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange)
+      window.removeEventListener('focus', handleVisibilityChange)
+    }
+  }, [isMobile, isConnected, address])
+
+  // Store connection attempt when opening modal
+  const handleOpenModal = () => {
+    if (isMobile) {
+      sessionStorage.setItem('walletConnecting', 'true')
+    }
+    open()
+  }
 
   return (
     <>
@@ -88,7 +166,7 @@ function App() {
         
         {!isConnected ? (
           <div className="card">
-            <button onClick={() => open()} className="connect-button">
+            <button onClick={handleOpenModal} className="connect-button">
               Connect Wallet
             </button>
             <p className="info">
