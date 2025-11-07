@@ -1,5 +1,6 @@
 import { useAccount, useDisconnect, useBalance, useWalletClient, usePublicClient, useChainId } from 'wagmi'
 import { useWeb3Modal } from '@web3modal/wagmi/react'
+import BuyTokens from './components/BuyTokens.jsx'
 import './App.css'
 
 function App() {
@@ -123,6 +124,12 @@ function App() {
                 Disconnect
               </button>
             </div>
+          </div>
+        )}
+
+        {isConnected && (
+          <div className="card buy-card">
+            <BuyTokens />
           </div>
         )}
 

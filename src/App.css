@@ -189,6 +189,160 @@ h1 {
   border-bottom: none;
 }
 
+.buy-card {
+  margin-top: 2rem;
+}
+
+.buy-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.buy-section h3 {
+  margin: 0 0 1rem 0;
+  color: #60a5fa;
+  text-align: center;
+}
+
+.payment-method-selector {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.payment-method-selector label {
+  color: #888;
+  font-size: 0.9em;
+  font-weight: 500;
+}
+
+.payment-buttons {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.payment-btn {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.2);
+  color: #fff;
+  font-size: 0.95em;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-width: 80px;
+}
+
+.payment-btn:hover {
+  border-color: rgba(255, 255, 255, 0.4);
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.payment-btn.active {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-color: #667eea;
+  color: white;
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.input-group label {
+  color: #888;
+  font-size: 0.9em;
+  font-weight: 500;
+}
+
+.amount-input,
+.referrer-input {
+  padding: 0.75rem 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.2);
+  color: #fff;
+  font-size: 1em;
+  font-family: 'Courier New', monospace;
+  transition: all 0.3s ease;
+}
+
+.amount-input:focus,
+.referrer-input:focus {
+  outline: none;
+  border-color: #667eea;
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.amount-input::placeholder,
+.referrer-input::placeholder {
+  color: #666;
+}
+
+.buy-button {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  border-radius: 12px;
+  padding: 1rem 2rem;
+  font-size: 1.1em;
+  font-weight: 600;
+  color: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  width: 100%;
+  margin-top: 0.5rem;
+}
+
+.buy-button:hover:not(:disabled) {
+  transform: scale(1.02);
+  box-shadow: 0 8px 24px rgba(102, 126, 234, 0.4);
+}
+
+.buy-button:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.buy-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.error-message {
+  padding: 1rem;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: 8px;
+  color: #ef4444;
+  font-size: 0.9em;
+  word-break: break-word;
+}
+
+.success-message {
+  padding: 1rem;
+  background: rgba(74, 222, 128, 0.1);
+  border: 1px solid rgba(74, 222, 128, 0.3);
+  border-radius: 8px;
+  color: #4ade80;
+  font-size: 0.9em;
+  word-break: break-word;
+}
+
+.transaction-hash {
+  padding: 0.75rem;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  color: #888;
+  font-size: 0.85em;
+  font-family: 'Courier New', monospace;
+  word-break: break-all;
+  text-align: center;
+}
+
 @media (max-width: 768px) {
   .container {
     padding: 1rem;
@@ -207,5 +361,13 @@ h1 {
 
   .value {
     font-size: 0.9em;
+  }
+
+  .payment-buttons {
+    flex-direction: column;
+  }
+
+  .payment-btn {
+    width: 100%;
   }
 }
