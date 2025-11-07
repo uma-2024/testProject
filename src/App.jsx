@@ -1,5 +1,6 @@
+import { useEffect, useRef } from 'react'
 import { useAccount, useDisconnect, useBalance, useWalletClient, usePublicClient, useChainId } from 'wagmi'
-import { useWeb3Modal } from '@web3modal/wagmi/react'
+import { useWeb3Modal, useWeb3ModalEvents } from '@web3modal/wagmi/react'
 import BuyTokens from './components/BuyTokens.jsx'
 import './App.css'
 
@@ -13,6 +14,40 @@ function App() {
   const { data: walletClient } = useWalletClient()
   const publicClient = usePublicClient()
   const chainId = useChainId()
+  const wasConnectedRef = useRef(false)
+
+  // Handle mobile redirect after successful connection
+  useEffect(() => {
+    // Check if we just connected (wasn't connected before, but now is)
+    if (isConnected && !wasConnectedRef.current && address) {
+      wasConnectedRef.current = true
+      
+      // Check if we're on mobile and came from a wallet app
+      const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
+      const isFromWallet = document.referrer === '' || window.history.length <= 1
+      
+      if (isMobile && isFromWallet) {
+        // Small delay to ensure connection is fully established
+        setTimeout(() => {
+          // Try to bring the app back to foreground
+          // This works for most mobile browsers
+          window.focus()
+          
+          // For iOS Safari, we can try to open the app URL
+          if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+            // Try to redirect back to the app
+            const currentUrl = window.location.href
+            window.location.href = currentUrl
+          }
+        }, 1000)
+      }
+    }
+    
+    // Reset when disconnected
+    if (!isConnected) {
+      wasConnectedRef.current = false
+    }
+  }, [isConnected, address])
 
   return (
     <>
@@ -132,7 +167,6 @@ function App() {
             <BuyTokens />
           </div>
         )}
-
         <div className="features">
           <h3>Features</h3>
           <ul>

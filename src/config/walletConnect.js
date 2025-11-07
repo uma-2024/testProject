@@ -4,11 +4,19 @@ import { mainnet, base } from 'wagmi/chains'
 // Get projectId from https://cloud.reown.com
 export const projectId = '9aced30cb7c70da7e0a7b4129fbd0a8f'
 
+// Get the current origin for proper mobile redirect
+const getOrigin = () => {
+  if (typeof window !== 'undefined') {
+    return window.location.origin
+  }
+  return 'https://localhost:5173' // fallback for SSR
+}
+
 // Create a metadata object - this is used for WalletConnect
 const metadata = {
   name: 'TestProject',
   description: 'React Vite App with WalletConnect',
-  url: 'https://localhost:5173', // origin must match your domain & subdomain
+  url: getOrigin(), // Use current origin for proper mobile redirect
   icons: ['https://avatars.githubusercontent.com/u/37784886']
 }
 
