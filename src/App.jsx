@@ -82,48 +82,48 @@ function App() {
   })
 
   // Handle mobile redirect after successful connection
-  useEffect(() => {
-    // Check if we just connected (wasn't connected before, but now is)
-    if (isConnected && !wasConnectedRef.current && address) {
-      wasConnectedRef.current = true
-      connectionAttemptRef.current = false
+  // useEffect(() => {
+  //   // Check if we just connected (wasn't connected before, but now is)
+  //   if (isConnected && !wasConnectedRef.current && address) {
+  //     wasConnectedRef.current = true
+  //     connectionAttemptRef.current = false
       
-      // Clear connection attempt flag
-      sessionStorage.removeItem('walletConnecting')
+  //     // Clear connection attempt flag
+  //     sessionStorage.removeItem('walletConnecting')
       
-      if (isMobile) {
-        // Multiple attempts to bring app back to foreground
-        const redirectAttempts = [
-          () => window.focus(),
-          () => {
-            // Try to reload if still hidden
-            if (document.hidden) {
-              setTimeout(() => {
-                window.location.reload()
-              }, 500)
-            }
-          },
-          () => {
-            // For iOS, try to open the app URL again
-            if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
-              const currentUrl = window.location.href
-              window.location.href = currentUrl
-            }
-          }
-        ]
+  //     if (isMobile) {
+  //       // Multiple attempts to bring app back to foreground
+  //       const redirectAttempts = [
+  //         () => window.focus(),
+  //         () => {
+  //           // Try to reload if still hidden
+  //           if (document.hidden) {
+  //             setTimeout(() => {
+  //               window.location.reload()
+  //             }, 500)
+  //           }
+  //         },
+  //         () => {
+  //           // For iOS, try to open the app URL again
+  //           if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+  //             const currentUrl = window.location.href
+  //             window.location.href = currentUrl
+  //           }
+  //         }
+  //       ]
         
-        // Execute redirect attempts with delays
-        redirectAttempts.forEach((attempt, index) => {
-          setTimeout(attempt, 1000 * (index + 1))
-        })
-      }
-    }
+  //       // Execute redirect attempts with delays
+  //       redirectAttempts.forEach((attempt, index) => {
+  //         setTimeout(attempt, 1000 * (index + 1))
+  //       })
+  //     }
+  //   }
     
-    // Reset when disconnected
-    if (!isConnected) {
-      wasConnectedRef.current = false
-    }
-  }, [isConnected, address, isMobile])
+  //   // Reset when disconnected
+  //   if (!isConnected) {
+  //     wasConnectedRef.current = false
+  //   }
+  // }, [isConnected, address, isMobile])
 
   // Listen for page visibility changes (when user returns from wallet app)
   useEffect(() => {
